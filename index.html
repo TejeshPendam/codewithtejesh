@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Food Order Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .payment-section, .address-section {
+            background-color: #fff3e0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .upi-input, .payment-select, .address-input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+            border: 2px solid #4CAF50;
+            border-radius: 5px;
+        }
+        .btn {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .payment-info {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        function placeorder() {
+            const uname = document.getElementById("txtname").value;
+            const mobile = document.getElementById("txtmobile").value;
+            const burger = document.getElementById("optburger");
+            const role = document.getElementById("optrole");
+            const pizza = document.getElementById("optpizza");
+            const fries = document.getElementById("optfries");
+
+            if (!uname || !mobile) {
+                alert("Please enter your name and mobile number.");
+                return;
+            }
+
+            const phonePattern = /^[1-9]\d{9}$/;
+            if (!phonePattern.test(mobile)) {
+                alert("Please enter a valid 10-digit mobile number starting with 1-9.");
+                return;
+            }
+
+            let mcost = 0;
+            let acost = 60;
+            let mname = "";
+            let aname = "";
+
+            if (burger.checked) { mcost += 120; mname += burger.value + "<br>"; }
+            if (role.checked) { mcost += 150; mname += role.value + "<br>"; }
+            if (pizza.checked) { mcost += 150; mname += pizza.value + "<br>"; }
+            if (fries.checked) { mcost += acost; aname = fries.value; }
+
+            const paymentMethod = document.getElementById("payment_method").value;
+            let upiId = "";
+            let paymentMessage = "";
+
+            if (paymentMethod === "UPI") {
+                upiId = document.getElementById("upi_id").value;
+                if (!upiId) {
+                    alert("Please enter your UPI ID.");
+                    return;
+                }
+                paymentMessage = `UPI ID: ${upiId}`;
+            } else if (paymentMethod === "PhonePe") {
+                paymentMessage = "PhonePe Payment";
+            } else if (paymentMethod === "GooglePay") {
+                paymentMessage = "Google Pay Payment";
+            }
+
+            const address = document.getElementById("address").value;
+            if (!address) {
+                alert("Please enter your delivery address.");
+                return;
+            }
+
+            // Simulating payment request and success after address is confirmed
+            alert("Payment request sent. Please complete the payment.");
+
+            // After payment is simulated, show confirmation
+            setTimeout(function() {
+                alert("Payment Successful! Your order will be delivered to the provided address.");
+
+                // Show order summary
+                document.getElementById("order_summary").style.display = "block";
+                document.getElementById("lblName").innerHTML = uname;
+                document.getElementById("lblMobile").innerHTML = mobile;
+                document.getElementById("lblmeal").innerHTML = mname || "None";
+                document.getElementById("lbladd").innerHTML = aname || "None";
+                document.getElementById("lblAmount").innerHTML = `₹${mcost}`;
+                document.getElementById("lblPayment").innerHTML = `Payment Method: ${paymentMethod} - ${paymentMessage}`;
+                document.getElementById("lblAddress").innerHTML = `Delivery Address: ${address}`;
+            }, 3000); // Simulating a 3-second delay for payment processing
+        }
+
+        // Show/hide UPI ID input based on payment method selection
+        function updatePaymentDetails() {
+            const paymentMethod = document.getElementById("payment_method").value;
+            const upiInputSection = document.getElementById("upi_input_section");
+            const paymentInfoSection = document.getElementById("payment_info");
+
+            if (paymentMethod === "UPI") {
+                upiInputSection.style.display = "block";
+                paymentInfoSection.style.display = "none";
+            } else {
+                upiInputSection.style.display = "none";
+                paymentInfoSection.style.display = "block";
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Online Food Order Platform</h1>
+
+    <div class="container">
+        <div class="section">
+            <label>Customer Name:</label>
+            <input type="text" id="txtname">
+            <label>Customer Mobile No:</label>
+            <input type="text" id="txtmobile">
+        </div>
+
+        <div class="section">
+            <h3>Select a Meal</h3>
+            <div class="menu-item"><img src="burger.jpeg"><input type="checkbox" id="optburger" value="Burger"> Burger (₹120)</div>
+            <div class="menu-item"><img src="role.jpeg"><input type="checkbox" id="optrole" value="EGG Role"> Role (₹150)</div>
+            <div class="menu-item"><img src="pizza.jpg"><input type="checkbox" id="optpizza" value="Organo Sesoning Pizza"> Pizza (₹150)</div>
+        </div>
+
+        <div class="section">
+            <h3>Select Add-ons</h3>
+            <div class="menu-item"><img src="fries.jpeg"><input type="checkbox" id="optfries" value="Large Fries"> Large Fries (₹60)</div>
+        </div>
+
+        <!-- Address Section -->
+        <div class="address-section">
+            <h3>Enter Delivery Address</h3>
+            <textarea id="address" class="address-input" placeholder="Enter your delivery address"></textarea>
+        </div>
+
+        <!-- Payment Section -->
+        <div class="payment-section">
+            <h3>Choose Payment Method</h3>
+            <select id="payment_method" class="payment-select" onchange="updatePaymentDetails()">
+                <option value="UPI">UPI</option>
+                <option value="PhonePe">PhonePe</option>
+                <option value="GooglePay">Google Pay</option>
+            </select>
+
+            <!-- UPI ID input section -->
+            <div id="upi_input_section" style="display: none;">
+                <h3>Enter UPI ID</h3>
+                <input type="text" id="upi_id" class="upi-input" placeholder="Enter UPI ID">
+            </div>
+
+            <!-- Payment method info for PhonePe/Google Pay -->
+            <div id="payment_info" style="display: block;">
+                <p class="payment-info">Select PhonePe or Google Pay to proceed with payment.</p>
+            </div>
+        </div>
+
+        <input type="button" class="btn" value="Place Order" onclick="placeorder()">
+
+        <!-- Order Summary Section -->
+        <div class="summary" id="order_summary" style="display: none;">
+            <h2>Order Summary</h2>
+            <p><b>Customer Name:</b> <span id="lblName"></span></p>
+            <p><b>Mobile:</b> <span id="lblMobile"></span></p>
+            <p><b>Meal:</b> <span id="lblmeal"></span></p>
+            <p><b>Add-ons:</b> <span id="lbladd"></span></p>
+            <p><b>Total Bill Amount:</b> <span id="lblAmount"></span></p>
+            <p><b>Payment Mode:</b> <span id="lblPayment"></span></p>
+            <p><b>Delivery Address:</b> <span id="lblAddress"></span></p>
+            <input type="button" class="btn" value="Print Bill" onclick="window.print()">
+        </div>
+    </div>
+</body>
+</html>
